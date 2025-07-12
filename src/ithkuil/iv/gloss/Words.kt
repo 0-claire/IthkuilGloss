@@ -364,11 +364,19 @@ fun parseModular(word: Word, marksMood: Boolean?): ParseOutcome {
     val midSlotList: MutableList<Slot> = mutableListOf()
 
     while (word.size > index + 2) {
-        midSlotList.add(
-            parseVnCn(word[index], word[index + 1], marksMood = marksMood ?: true, absoluteLevel = false)
-                ?: return Error("Unknown VnCn: ${word[index]}${word[index + 1]}")
-        )
-        index += 2
+        if(midSlotList.isEmpty()) {
+            midSlotList.add(
+                parseVnCn(word[index], word[index + 1], marksMood = marksMood ?: true, absoluteLevel = false)
+                    ?: return Error("Unknown VnCn: ${word[index]}${word[index + 1]}")
+            )
+            index += 2
+        } else {
+            midSlotList.add(
+                parseVnCm(word[index], word[index + 1], absoluteLevel = false)
+                    ?: return Error("Unknown VnCm: ${word[index]}${word[index + 1]}")
+            )
+            index += 2
+        }
     }
 
     if (midSlotList.size > 3) return Error("Too many (>3) middle slots in modular adjunct: ${midSlotList.size}")
@@ -376,7 +384,8 @@ fun parseModular(word: Word, marksMood: Boolean?): ParseOutcome {
     val slot5 = when {
         midSlotList.isEmpty() -> Aspect.byVowel(word[index]) ?: return Error("Unknown aspect: ${word[index]}")
         else -> when (word.stress) {
-            Stress.PENULTIMATE -> parseVnCn(word[index], "h", marksMood = true, absoluteLevel = false)
+            Stress.PENULTIMATE -> parseVnCm(word[index], "ň", absoluteLevel = false)
+            // Stress.PENULTIMATE -> parseVnCn(word[index], "h", marksMood = true, absoluteLevel = false)
                 ?: return Error("Unknown non-aspect Vn: ${word[index]}")
 
             Stress.ULTIMATE -> parseVh(word[index]) ?: return Error("Unknown Vh: ${word[index]}")

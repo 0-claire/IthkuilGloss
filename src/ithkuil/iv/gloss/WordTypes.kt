@@ -19,14 +19,16 @@ fun wordTypeOf(word: Word): WordType {
 
         pattern(word) {
             maybe("w", "y")
-            confirm { it !in setOf("ë", "äi") }
-            repeat(3) {
+            // confirm { it !in setOf("ë", "äi") }
+            vowel()
+            maybe {
+                oneOf(CN_CONSONANTS)
                 maybe {
                     vowel()
-                    oneOf(CN_CONSONANTS)
+                    oneOf("ň", "n")
                 }
+                vowel()
             }
-            vowel()
         } -> WordType.MODULAR_ADJUNCT
 
         pattern(word) {

@@ -330,6 +330,30 @@ fun parseCa(ca: String): Slot? {
     return Slot(affiliation, configuration, extension, perspective, essence)
 }
 
+fun parseVnCm(vn: String, cm: String, absoluteLevel: Boolean = false): Slot? {
+
+    if (cm !in CM_CONSONANTS) return null
+
+    val (series, form) = seriesAndForm(vn)
+
+    if (absoluteLevel && (series != 4 || cm !in CM_PATTERN_ONE)) return null
+
+    val vnValue: Glossable = if (cm in CM_PATTERN_ONE) {
+        when (series) {
+            1 -> Valence.byForm(form)
+            2 -> Phase.byForm(form)
+            3 -> EffectAndPerson.byForm(form)
+            4 -> LevelAndRelativity(form, absoluteLevel)
+            else -> return null
+        }
+    } else {
+        Aspect.byVowel(vn) ?: return null
+    }
+
+    return Slot(vnValue)
+
+}
+
 fun parseVnCn(vn: String, cn: String, marksMood: Boolean = true, absoluteLevel: Boolean = false): Slot? {
 
     if (cn !in CN_CONSONANTS) return null
