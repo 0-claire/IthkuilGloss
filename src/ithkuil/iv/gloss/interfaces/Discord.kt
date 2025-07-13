@@ -104,7 +104,7 @@ private suspend fun MessageCreateEvent.replyAndTrackChanges() {
 suspend fun Message.respondTo(): Message? {
     val user = author ?: return null
     if (user.isBot || !(content.startsWith("$") || content.contains(":?"))) return null
-    if (content == "$help") {
+    if (content == "\$help") {
         sendHelp(user, channel)
         return null
     }
