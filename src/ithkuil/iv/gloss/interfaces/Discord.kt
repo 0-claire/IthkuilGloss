@@ -55,7 +55,7 @@ suspend fun main() {
             +Intent.DirectMessages
             +Intent.DirectMessagesReactions
         }
-        presence { playing("?help for info") }
+        presence { playing("\$help for info") }
         logger.info { "Logged in!" }
     }
 }
@@ -100,10 +100,11 @@ private suspend fun MessageCreateEvent.replyAndTrackChanges() {
     liveMessage.shutDown(CancellationException("Minute passed"))
 }
 
+// PREFIX IS HERE
 suspend fun Message.respondTo(): Message? {
     val user = author ?: return null
-    if (user.isBot || !(content.startsWith("?") || content.contains(":?"))) return null
-    if (content == "?help") {
+    if (user.isBot || !(content.startsWith("$") || content.contains(":?"))) return null
+    if (content == "$help") {
         sendHelp(user, channel)
         return null
     }
