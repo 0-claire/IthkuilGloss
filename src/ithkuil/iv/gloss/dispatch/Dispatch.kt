@@ -45,6 +45,8 @@ const val ROOTS_URL =
 const val AFFIXES_PATH = "./resources/affixes.tsv"
 const val ROOTS_PATH = "./resources/roots.tsv"
 
+const val LEXICON_JSON_DATA_PATH = "./resources/lexicon_en.yaml"
+
 fun loadResourcesOnline() = with(LocalDictionary) {
     logger.info { "-> loadResourcesOnline()    (${affixes.size} affixes, ${roots.size} roots)" }
     val loadedAffixes = URL(AFFIXES_URL).readText()
@@ -87,7 +89,7 @@ fun respond(content: String): String? {
     }
 
     val (fullRequest, arguments) = content.splitOnWhitespace().let { it[0] to it.drop(1) }
-    val request = fullRequest.removePrefix("??").removePrefix("?")
+    val request = fullRequest.removePrefix("$$").removePrefix("$")
     val o = GlossOptions(requestPrecision(request), fullRequest.startsWith("??"))
     logger.info { "   respond($content) received options: $o" }
     logger.info {
