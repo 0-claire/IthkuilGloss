@@ -101,10 +101,12 @@ private suspend fun MessageCreateEvent.replyAndTrackChanges() {
 }
 
 // PREFIX IS HERE
+val prefix = '$';
+
 suspend fun Message.respondTo(): Message? {
     val user = author ?: return null
-    if (user.isBot || !(content.startsWith("$") || content.contains(":?"))) return null
-    if (content == "\$help") {
+    if (user.isBot || !(content.startsWith("$prefix") || content.contains(":$prefix"))) return null
+    if (content == "${prefix}help") {
         sendHelp(user, channel)
         return null
     }

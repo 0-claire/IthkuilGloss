@@ -6,11 +6,13 @@ import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
+val prefix = '$';
+
 class DiscordTests {
     @Test
     fun longMessageTest() {
         val longText = File("./resources/longtest.txt").readText()
-        val messages = respond("?gloss $longText")!!.splitMessages().toList()
+        val messages = respond("${prefix}gloss $longText")!!.splitMessages().toList()
         assertTrue("Is empty!") { messages.isNotEmpty() }
         assertTrue("Wrong size: ${messages.size}") { messages.size == 2 }
         assertTrue("Are longer than 2000 chars ${messages.map { it.length }}") { messages.all { it.length <= 2000 } }

@@ -7,6 +7,10 @@ import java.io.File
 import java.net.URL
 import kotlin.system.exitProcess
 
+val prefix = '$';
+val regexEscapedPrefix = "\\$";
+
+
 val startTime = Clock.System.now()
 
 val logger = KotlinLogging.logger { }
@@ -77,20 +81,20 @@ fun requestPrecision(request: String) = when {
 }
 
 private fun glossInline(content: String): String? =
-    ":\\?(.*?)\\?:".toRegex(RegexOption.DOT_MATCHES_ALL)
+    ":${regexEscapedPrefix}(.*?)${regexEscapedPrefix}:".toRegex(RegexOption.DOT_MATCHES_ALL)
         .findAll(content)
-        .map { match -> respond("?s ${match.groupValues[1].trimWhitespace()}") }
+        .map { match -> respond("${prefix}s ${match.groupValues[1].trimWhitespace()}") }
         .joinToString("\n\n")
         .takeIf { it.isNotBlank() }
 
 fun respond(content: String): String? {
-    if (!content.startsWith("?")) {
+    if (!content.startsWith("$prefix")) {
         return glossInline(content)
     }
 
     val (fullRequest, arguments) = content.splitOnWhitespace().let { it[0] to it.drop(1) }
-    val request = fullRequest.removePrefix("$$").removePrefix("$")
-    val o = GlossOptions(requestPrecision(request), fullRequest.startsWith("??"))
+    val request = fullRequest.removePrefix("$prefix$prefix").removePrefix("$prefix")
+    val o = GlossOptions(requestPrecision(request), fullRequest.startsWith("$prefix$prefix"))
     logger.info { "   respond($content) received options: $o" }
     logger.info {
         "   respond($content) received arguments: ${
@@ -107,15 +111,16 @@ fun respond(content: String): String? {
 
         "affix" -> lookupAffix(arguments)
 
-        "!stop" -> exitProcess(0)
+        // Nope. Must be by owner or mod or smth
+        // "!stop" -> exitProcess(0)
 
-        "!reload" -> try {
-            loadResourcesOnline()
-            "External resources successfully reloaded!"
-        } catch (e: Exception) {
-            logger.error { e.toString() }
-            "Error while reloading external resources. Please contact the maintainers"
-        }
+        // "!reload" -> try {
+            // loadResourcesOnline()
+            // "External resources successfully reloaded!"
+        // } catch (e: Exception) {
+            // logger.error { e.toString() }
+            // "Error while reloading external resources. Please contact the maintainers"
+        // }
 
         "status" -> """
             __Status report:__
